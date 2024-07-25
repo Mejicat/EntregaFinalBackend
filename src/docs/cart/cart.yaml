@@ -1,0 +1,213 @@
+openapi: 3.0.1
+info:
+  title: API de Carrito
+  description: API para la gestión de carritos de compras
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/carts
+    description: Servidor local
+
+paths:
+  /:
+    post:
+      summary: Crear un nuevo carrito
+      security:
+        - bearerAuth: []
+      tags:
+        - Carritos
+      responses:
+        '201':
+          description: Carrito creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  cart:
+                    $ref: '#/components/schemas/Cart'
+        '400':
+          description: Error en la creación del carrito
+
+  /{cid}:
+    get:
+      summary: Obtener un carrito por ID
+      security:
+        - bearerAuth: []
+      tags:
+        - Carritos
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Carrito encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  cart:
+                    $ref: '#/components/schemas/Cart'
+        '400':
+          description: Error en la obtención del carrito
+
+  /{cid}/products/{pid}:
+    
+    delete:
+      summary: Eliminar un producto del carrito
+      security:
+        - bearerAuth: []
+      tags:
+        - Carritos
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto eliminado del carrito exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        '400':
+          description: Error en la eliminación del producto del carrito
+    post:
+      summary: Agregar un producto al carrito
+      security:
+        - bearerAuth: []
+      tags:
+        - Carritos
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  default: 1
+      responses:
+        '201':
+          description: Producto agregado al carrito exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  response:
+                    $ref: '#/components/schemas/Cart'
+        '400':
+          description: Error en la adición del producto al carrito
+
+    put:
+      summary: Actualizar la cantidad de un producto en el carrito
+      security:
+        - bearerAuth: []
+      tags:
+        - Carritos
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Cantidad de producto actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  response:
+                    $ref: '#/components/schemas/Cart'
+        '400':
+          description: Error en la actualización de la cantidad del producto
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        user:
+          type: string
+          description: ID del usuario
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ID del producto
+              quantity:
+                type: integer
+                description: Cantidad del producto
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,61 @@
+<div class="bg-white py-6 sm:py-8 lg:py-12">
+  <div class="mx-auto max-w-screen-2xl px-4 md:px-8">
+    <h2 class="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl">Iniciar Sesión</h2>
+
+    <form id="loginForm" class="mx-auto max-w-lg rounded-lg border">
+      <div class="flex flex-col gap-4 p-4 md:p-8">
+        <div>
+          <label for="email" class="mb-2 inline-block text-sm text-gray-800 sm:text-base">Email</label>
+          <input id="email" name="email" type="email" class="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" required />
+        </div>
+
+        <div>
+          <label for="password" class="mb-2 inline-block text-sm text-gray-800 sm:text-base">Contraseña</label>
+          <input id="password" name="password" type="password" class="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" required />
+        </div>
+
+        <button type="submit" class="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base">Iniciar Sesión</button>
+
+        <!-- Enlace para iniciar sesión con GitHub -->
+        <div class="text-center mt-4">
+          <a href="/api/sessions/github" class="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700">Iniciar sesión con GitHub</a>
+        </div>
+      </div>
+    </form>
+
+    <div class="flex items-center justify-center bg-gray-100 p-4">
+      <p class="text-center text-sm text-gray-500">¿No tienes cuenta? 
+        <a href="javascript:void(0)" onclick="redirectToRegister()" class="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700">Registrarse</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{{#if failLogin}}
+<script>alert('login failed')</script>
+{{/if}}
+
+<script>
+  function redirectToRegister() {
+    window.location.href = "/register"
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const response = await fetch.post('/api/users/login', { email, password });
+      console.log(response)
+    /*  if (response.data.status === 'success') {
+        window.location.href = '/views/carts';
+      } else {
+        alert('Login failed');
+      }*/
+    } catch (error) {
+      alert('Login failed');
+      console.log(error)
+    }
+  });
+</script>

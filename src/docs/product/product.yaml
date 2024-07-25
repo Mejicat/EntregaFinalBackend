@@ -1,0 +1,174 @@
+openapi: 3.0.1
+info:
+  title: Documentación de la API de Productos
+  description: Esta documentación cubre la API de productos de tu aplicación.
+  version: 1.0.0
+paths:
+  /api/products:
+    post:
+      summary: Agregar nuevo producto
+      description: Crea un nuevo producto.
+      requestBody:
+        description: Datos del nuevo producto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        201:
+          description: Producto agregado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/Product'
+    get:
+      summary: Obtener productos
+      description: Recupera una lista de productos con paginación.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Límite de productos por página
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Filtros de búsqueda en formato JSON
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: Ordenamiento de los resultados en formato JSON
+      responses:
+        200:
+          description: Lista de productos recuperada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+  /api/products/{productId}:
+    get:
+      summary: Obtener producto por ID
+      description: Recupera un producto específico mediante su ID.
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto recuperado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/Product'
+    put:
+      summary: Actualizar producto
+      description: Actualiza un producto existente mediante su ID.
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Datos del producto a actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        200:
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  product:
+                    $ref: '#/components/schemas/Product'
+    delete:
+      summary: Eliminar producto
+      description: Elimina un producto específico mediante su ID.
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        code:
+          type: string
+        price:
+          type: number
+        status:
+          type: boolean
+          default: true
+        stock:
+          type: number
+        category:
+          type: string
+        thumbnails:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string

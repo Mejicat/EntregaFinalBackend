@@ -1,0 +1,41 @@
+<div class="bg-white py-6 sm:py-8 lg:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 md:px-8">
+    <div class="grid gap-8 md:grid-cols-2">
+
+      <div class="grid gap-4 lg:grid-cols-5">
+        <div class="relative overflow-hidden rounded-lg bg-gray-100 lg:col-span-4">
+          <img src={{product.thumbnails.[0]}} alt="{{product.title}}" class="h-full w-full object-cover object-center" />
+        </div>
+      </div>
+
+      <div class="md:py-8">
+        <div class="mb-2 md:mb-3">
+          <span class="mb-0.5 inline-block text-gray-500">{{product.category}}</span>
+          <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl">{{product.title}}</h2>
+        </div>
+
+        <div class="mb-4 md:mb-6">
+          <span class="mb-3 inline-block text-sm font-semibold text-gray-500 md:text-base">Descripcion</span>
+          <div class="text-sm text-gray-500">{{product.description}}</div>
+        </div>
+
+        <div class="mb-8 md:mb-10">
+          <span class="mb-3 inline-block text-sm font-semibold text-gray-500 md:text-base">Stock</span>
+          <div class="text-sm text-gray-500">{{product.stock}}</div>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex items-end gap-2">
+            <span class="text-xl font-bold text-gray-800 md:text-2xl">${{product.price}}</span>
+          </div>
+        </div>
+
+        <div class="flex gap-2.5">
+          <a id="addToCartButton" data-product-id="{{product._id}}" href="#" class="inline-block flex-1 rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 sm:flex-none md:text-base">Añadir al carrito</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/{{script}}"></script>

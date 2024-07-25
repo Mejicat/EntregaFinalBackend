@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    <form id="role-switch-form">
+        <label for="role">Select new role:</label>
+        <select id="role" name="role" data-user-id="{{user._id}}">
+            {{#each roles}}
+                <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+        <button type="submit">Update Role</button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/roleSwitcher.js"></script>
+</body>
+</html>
