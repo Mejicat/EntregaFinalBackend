@@ -93,6 +93,31 @@ class UserRepository {
       throw new Error(`Error deleting user: ${error.message}`);
     }
   }
+
+  async updateLastConnection(userId) {
+    try {
+      const user = await this.dao.updateLastConnection(userId);
+      if (!user) {
+        throw new Error("User not found for updating last connection");
+      }
+      return new UserDto(user);
+    } catch (error) {
+      throw new Error(`Error updating last connection: ${error.message}`);
+    }
+  }
+  
+  async uploadDocuments(userId, documents) {
+    try {
+      const user = await this.dao.uploadDocuments(userId, documents);
+      if (!user) {
+        throw new Error("User not found for uploading documents");
+      }
+      return new UserDto(user);
+    } catch (error) {
+      throw new Error(`Error uploading documents: ${error.message}`);
+    }
+  }
+  
 }
 
 export default UserRepository;

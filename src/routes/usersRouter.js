@@ -1,24 +1,25 @@
 import { Router } from 'express';
 import passport from "passport";
 import nodemailer from 'nodemailer';
-import jwtAuth from '../middlewares/jwtAuth.js';
 import jwt from 'jsonwebtoken';
 
+import jwtAuth from '../middlewares/jwtAuth.js';
 import UserService from "../services/userService.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import { isValidPassword, createHash } from "../utils/bcrypt.js";
+import { uploader } from '../utils/multerUtils.js';
 
 const router = Router();
 const userService = new UserService();
 
 const JWT_SECRET = process.env.JWT_SECRET || "coderSecret";
 const transport = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+  service: 'gmail',
+  port: 587,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 });
 
 router.get('/current', jwtAuth, async (req, res, next) => {
@@ -80,6 +81,8 @@ router.post('/login', async (req, res, next) => {
       return res.status(400).send({ status: "error", message: "Credenciales inválidas" });
     }
 
+    await userService.updateLastConnection(user._id);
+
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "coderSecret", { expiresIn: '1h' });
     res.cookie("auth", token, { maxAge: 60 * 60 * 1000 }).send({ status: "success", token });
   } catch (error) {
@@ -110,9 +113,17 @@ router.get("/githubcallback", passport.authenticate('github', { failureRedirect:
   }
 });
 
-router.get("/logout", async (req, res) => {
-  res.clearCookie("auth");
-  res.redirect("/login");
+router.get("/logout", async (req, res, next) => {
+  try {
+    if (req.user && req.user._id) {
+      await userService.updateLastConnection(req.user._id);
+    }
+
+    res.clearCookie("auth");
+    res.redirect("/login");
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/', (req, res) => {
@@ -143,17 +154,17 @@ router.post('/forgot-password', async (req, res) => {
 
   const user = await userService.findUserEmail(email);
   if (!user) {
-      return res.status(400).send({ status: "error", message: "Usuario no encontrado" });
+    return res.status(400).send({ status: "error", message: "Usuario no encontrado" });
   }
 
   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
   const resetLink = `http://localhost:8080/api/users/reset-password?token=${token}`;
 
   await transport.sendMail({
-      from: 'Lucas Gatto <lucas.gatto@recargapay.com>',
-      to: email,
-      subject: 'Restablecimiento de Contraseña',
-      html: `<div>
+    from: 'Lucas Gatto <lucas.gatto@recargapay.com>',
+    to: email,
+    subject: 'Restablecimiento de Contraseña',
+    html: `<div>
                 <h1>Restablecimiento de Contraseña</h1>
                 <p>Para restablecer su contraseña, haga clic en el siguiente enlace:</p>
                 <a href="${resetLink}">Restablecer Contraseña</a>
@@ -167,10 +178,10 @@ router.get('/reset-password', async (req, res) => {
   const { token } = req.query;
 
   try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      res.render('reset-password', { token });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.render('reset-password', { token });
   } catch (error) {
-      res.status(400).send({ status: 'error', message: 'Token inválido o expirado' });
+    res.status(400).send({ status: 'error', message: 'Token inválido o expirado' });
   }
 });
 
@@ -178,30 +189,30 @@ router.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = await userService.getUserById(decoded.id);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await userService.getUserById(decoded.id);
 
-      if (isValidPassword(user, newPassword)) {
-          return res.status(400).send({ status: 'error', message: 'La nueva contraseña no puede ser la misma que la anterior' });
-      }
+    if (isValidPassword(user, newPassword)) {
+      return res.status(400).send({ status: 'error', message: 'La nueva contraseña no puede ser la misma que la anterior' });
+    }
 
-      const hashedPassword = createHash(newPassword);
-      await userService.updateUserPassword(decoded.id, hashedPassword);
+    const hashedPassword = createHash(newPassword);
+    await userService.updateUserPassword(decoded.id, hashedPassword);
 
-      res.send({ status: 'success', message: 'Contraseña restablecida con éxito' });
+    res.send({ status: 'success', message: 'Contraseña restablecida con éxito' });
   } catch (error) {
-      res.status(400).send({ status: 'error', message: 'Token inválido o expirado' });
+    res.status(400).send({ status: 'error', message: 'Token inválido o expirado' });
   }
 });
 
 router.get('/premium/:uid', jwtAuth, async (req, res) => {
   const user = await userService.getUserById(req.params.uid);
   const roles = ['usuario', 'premium'];
-  
+
   if (user.role === 'premium' || user.role === 'usuario') {
-      res.render('switchRole', { title: 'Role Switcher', user: user, role: roles });
-  }else{
-      res.status(401).json({ error: 'Unauthorized', message: 'No tienes permiso de acceso' });
+    res.render('switchRole', { title: 'Role Switcher', user: user, role: roles });
+  } else {
+    res.status(401).json({ error: 'Unauthorized', message: 'No tienes permiso de acceso' });
   }
 });
 
@@ -210,10 +221,35 @@ router.put('/premium/:uid', jwtAuth, async (req, res) => {
   const newRole = req.body.role;
 
   try {
+    // Verificar si el usuario ha cargado los documentos necesarios
+    const user = await userService.getUserById(uid);
+    const requiredDocuments = ['Identificación', 'Comprobante de Domicilio', 'Comprobante de Estado de Cuenta'];
+    const uploadedDocuments = user.documents.map(doc => doc.name);
+
+    const hasRequiredDocuments = requiredDocuments.every(doc => uploadedDocuments.includes(doc));
+
+    if (!hasRequiredDocuments) {
+      return res.status(400).send("No se puede actualizar a premium. Documentos requeridos faltantes.");
+    }
+
+    // Actualizar el rol del usuario
     await userService.updateUserRole(uid, newRole);
     res.status(200).send("Rol actualizado exitosamente.");
   } catch (error) {
     res.status(500).send("Error actualizando el rol");
+  }
+});
+
+
+router.post('/:uid/documents', jwtAuth, uploader.array('docs', 3), async (req, res) => {
+  try {
+    req.storage_path = 'documents';
+
+    const updatedUser = await userService.uploadDocuments(req.params.uid, req.files); //Actualizo al user que subió un doc.
+
+    res.status(200).send({ origin: 'local', payload: 'upload', user: updatedUser });
+  } catch (err) {
+    res.status(500).send({ origin: 'local', payload: null, error: err.message });
   }
 });
 

@@ -92,6 +92,30 @@ class UserService {
         }
       }
 
+      async updateLastConnection(userId) {
+        try {
+          const user = await userRepository.updateLastConnection(userId);
+          if (!user) {
+            throw new Error("Error updating last connection");
+          }
+          return user;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      async uploadDocuments(userId, documents) {
+        try {
+          const user = await userRepository.uploadDocuments(userId, documents);
+          if (!user) {
+            throw new Error("Error uploading documents");
+          }
+          return new UserDto(user);
+        } catch (error) {
+          throw new Error(`Error in userService uploading documents: ${error.message}`);
+        }
+      }
+
     }
 
 export default UserService

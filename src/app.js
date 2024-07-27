@@ -151,7 +151,7 @@ const initializeApp = async () => {
         }
     });
 
-    const PORT = 8080;
+    const PORT = process.env.PORT || 8080;
 
     const httpServer = app.listen(PORT, () => {
         startLogger(`Server Started at ${new Date().toLocaleTimeString()}`);

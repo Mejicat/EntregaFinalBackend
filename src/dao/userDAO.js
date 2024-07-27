@@ -152,6 +152,23 @@ class UserDAO {
   async deleteUserByEmail(email) {
     return await userModel.deleteOne({ email });
   }
+
+  async updateLastConnection(userId) {
+    try {
+      const user = await userModel.findByIdAndUpdate(userId, {lastConnection: Date.now()}, {new: true})
+      return user
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async uploadDocuments(userId, documents) {
+    try {
+      return await userModel.findByIdAndUpdate(userId, { $push: { documents } }, { new: true });
+    } catch (error) {
+      throw error
+    }
+  }
   
 }
 
