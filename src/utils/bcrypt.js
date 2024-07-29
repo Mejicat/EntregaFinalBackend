@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 // Hashing de contraseñas
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))

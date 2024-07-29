@@ -15,7 +15,7 @@
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "artillery": "^1.7.4",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "chai": "^5.1.1",
     "commander": "^12.0.0",
     "connect-flash": "^0.1.1",
