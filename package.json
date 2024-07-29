@@ -14,7 +14,7 @@
   "type": "module",
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "artillery": "^2.0.15",
+    "artillery": "^1.7.4",
     "bcrypt": "^5.1.1",
     "chai": "^5.1.1",
     "commander": "^12.0.0",
