@@ -3,7 +3,7 @@ import express from 'express';
 import ProductService from "../services/productService.js";
 import jwtAuth from '../middlewares/jwtAuth.js';
 import isAdmin from "../middlewares/isAdmin.js";
-import CustomError from '../services/errors/customError.js';
+import CustomError from '../services/errors/CustomError.js';
 import { generateProductErrorInfo } from '../services/errors/info.js';
 import { ErrorCodes } from '../services/errors/enums.js';
 
