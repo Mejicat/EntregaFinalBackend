@@ -218,22 +218,18 @@ router.get('/premium/:uid', jwtAuth, async (req, res) => {
 
 router.put('/premium/:uid', jwtAuth, async (req, res) => {
   const uid = req.params.uid;
-  const newRole = req.body.role;
 
   try {
     // Verificar si el usuario ha cargado los documentos necesarios
     const user = await userService.getUserById(uid);
-    const requiredDocuments = ['Identificación', 'Comprobante de Domicilio', 'Comprobante de Estado de Cuenta'];
-    const uploadedDocuments = user.documents.map(doc => doc.name);
 
-    const hasRequiredDocuments = requiredDocuments.every(doc => uploadedDocuments.includes(doc));
-
-    if (!hasRequiredDocuments) {
-      return res.status(400).send("No se puede actualizar a premium. Documentos requeridos faltantes.");
+    // Verificar si el usuario ha cargado al menos tres documentos
+    if (user.documents.length < 3) {
+      return res.status(400).send("No se puede actualizar a premium. Debe cargar al menos tres documentos.");
     }
 
     // Actualizar el rol del usuario
-    await userService.updateUserRole(uid, newRole);
+    await userService.updateUserRole(uid, 'premium');
     res.status(200).send("Rol actualizado exitosamente.");
   } catch (error) {
     res.status(500).send("Error actualizando el rol");

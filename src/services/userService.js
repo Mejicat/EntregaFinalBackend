@@ -110,7 +110,7 @@ class UserService {
           if (!user) {
             throw new Error("Error uploading documents");
           }
-          return new UserDto(user);
+          return new UserDTO(user);
         } catch (error) {
           throw new Error(`Error in userService uploading documents: ${error.message}`);
         }
