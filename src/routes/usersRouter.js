@@ -249,4 +249,30 @@ router.post('/:uid/documents', jwtAuth, uploader.array('docs', 3), async (req, r
   }
 });
 
+router.delete('/inactive', jwtAuth, isAdmin, async (req, res, next) => {
+  const { inactivityPeriod, action } = req.body; // inactivityPeriod en milisegundos, action puede ser 'delete' o 'deactivate'
+
+  if (!inactivityPeriod || !action || !['delete', 'deactivate'].includes(action)) {
+    return res.status(400).send({ status: "error", message: "Invalid parameters" });
+  }
+
+  try {
+    const results = await userService.handleInactiveUsers(inactivityPeriod, action);
+    res.status(200).send({ status: 'success', message: 'Users processed', results });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/:uid', jwtAuth, isAdmin, async (req, res, next) => {
+  const uid = req.params.uid;
+  try {
+    await userService.deleteUser(uid);
+    res.status(200).send({ status: 'success', message: 'User deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 export default router;

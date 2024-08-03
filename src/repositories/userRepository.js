@@ -118,6 +118,33 @@ class UserRepository {
     }
   }
   
+  async findInactiveUsers(inactivityPeriod) {
+    try {
+      const thresholdDate = new Date(Date.now() - inactivityPeriod);
+      const inactiveUsers = await this.dao.findInactiveUsers(thresholdDate);
+      return inactiveUsers.map(user => new UserDto(user));
+    } catch (error) {
+      throw new Error(`Error finding inactive users: ${error.message}`);
+    }
+  }
+
+  async deactivateUser(userId) {
+    try {
+      const user = await this.dao.deactivateUser(userId);
+      return new UserDto(user);
+    } catch (error) {
+      throw new Error(`Error deactivating user: ${error.message}`);
+    }
+  }
+
+  async deleteUser(userId) {
+    try {
+      await this.dao.deleteUser(userId);
+    } catch (error) {
+      throw new Error(`Error deleting user: ${error.message}`);
+    }
+  }
+
 }
 
 export default UserRepository;

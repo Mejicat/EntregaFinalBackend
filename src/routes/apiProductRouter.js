@@ -1,6 +1,7 @@
 import express from 'express';
 
 import ProductService from "../services/productService.js";
+import UserService from '../services/userService.js';
 import jwtAuth from '../middlewares/jwtAuth.js';
 import isAdmin from "../middlewares/isAdmin.js";
 import CustomError from '../services/errors/CustomError.js';
@@ -8,6 +9,7 @@ import { generateProductErrorInfo } from '../services/errors/info.js';
 import { ErrorCodes } from '../services/errors/enums.js';
 
 const router = express.Router();
+const userService = new UserService();
 
 router.get('/', jwtAuth, async (req, res, next) => {
     const limit = +req.query.limit || 10;
@@ -115,14 +117,23 @@ router.put('/:productId', jwtAuth, isAdmin, async (req, res, next) => {
 });
 
 router.delete('/:productId', jwtAuth, isAdmin, async (req, res, next) => {
-    const productId = req.params.productId;
+  const productId = req.params.productId;
+  const userId = req.user.id; // El ID del usuario viene del middleware jwtAuth
 
-    try {
-        const product = await ProductService.deleteProduct(productId);
-        res.status(200).send({ status: 'success', message: 'producto eliminado', product });
-    } catch (error) {
-        next(error);
+  try {
+    const product = await ProductService.deleteProduct(productId);
+
+    // Obtener detalles del usuario
+    const user = await userService.getUserById(userId);
+    if (user.role === 'premium') {
+      // Enviar notificación por correo
+      await userService.sendEmailNotification(user.email, 'Producto eliminado', `El producto ${product.title} ha sido eliminado.`);
     }
+
+    res.status(200).send({ status: 'success', message: 'producto eliminado', product });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get('/mockingproducts', async (req, res, next) => {

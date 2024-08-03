@@ -47,7 +47,12 @@ const userSchema = new mongoose.Schema({
             reference: String }] 
     },
     last_connection: {
-        type: Date
+        type: Date,
+        default: Date.now 
+    },
+    active: { 
+        type: Boolean, 
+        default: true 
     },
     cart: {
         type: [
