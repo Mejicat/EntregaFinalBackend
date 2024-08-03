@@ -1,43 +1,42 @@
-<div class="bg-white py-6 sm:py-8 lg:py-12">
-  <div class="mx-auto max-w-screen-2xl px-4 md:px-8">
-    <h2 class="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl">Iniciar Sesión</h2>
+<div class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 py-12 sm:py-16 lg:py-20">
+  <div class="mx-auto max-w-screen-lg px-6 md:px-12">
+    <h2 class="mb-6 text-center text-3xl font-extrabold text-white md:mb-10 lg:text-4xl">Iniciar Sesión</h2>
 
-    <form id="loginForm" class="mx-auto max-w-lg rounded-lg border">
-      <div class="flex flex-col gap-4 p-4 md:p-8">
+    <form id="loginForm" class="mx-auto max-w-lg rounded-lg bg-white shadow-lg">
+      <div class="flex flex-col gap-6 p-6 md:p-10">
         <div>
-          <label for="email" class="mb-2 inline-block text-sm text-gray-800 sm:text-base">Email</label>
-          <input id="email" name="email" type="email" class="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" required />
+          <label for="email" class="mb-2 block text-sm font-medium text-gray-700">Email</label>
+          <input id="email" name="email" type="email" class="w-full rounded border border-gray-300 bg-gray-100 px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-purple-500" required />
         </div>
 
         <div>
-          <label for="password" class="mb-2 inline-block text-sm text-gray-800 sm:text-base">Contraseña</label>
-          <input id="password" name="password" type="password" class="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" required />
+          <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Contraseña</label>
+          <input id="password" name="password" type="password" class="w-full rounded border border-gray-300 bg-gray-100 px-4 py-2 text-gray-800 outline-none focus:ring-2 focus:ring-purple-500" required />
         </div>
 
-        <button type="submit" class="block rounded-lg bg-gray-800 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base">Iniciar Sesión</button>
+        <button type="submit" class="w-full rounded-lg bg-purple-600 px-6 py-3 text-center text-lg font-semibold text-white transition duration-150 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">Iniciar Sesión</button>
 
-        <!-- Enlace para iniciar sesión con GitHub -->
         <div class="text-center mt-4">
-          <a href="/api/sessions/github" class="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700">Iniciar sesión con GitHub</a>
+          <a href="/api/sessions/github" class="text-sm font-medium text-purple-600 transition duration-150 hover:text-purple-700">Iniciar sesión con GitHub</a>
         </div>
       </div>
     </form>
 
-    <div class="flex items-center justify-center bg-gray-100 p-4">
-      <p class="text-center text-sm text-gray-500">¿No tienes cuenta? 
-        <a href="javascript:void(0)" onclick="redirectToRegister()" class="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700">Registrarse</a>
+    <div class="mt-6 flex items-center justify-center bg-gray-100 py-4">
+      <p class="text-center text-sm text-gray-600">¿No tienes cuenta?
+        <a href="javascript:void(0)" onclick="redirectToRegister()" class="font-medium text-purple-600 transition duration-150 hover:text-purple-700">Registrarse</a>
       </p>
     </div>
   </div>
 </div>
 
 {{#if failLogin}}
-<script>alert('login failed')</script>
+<script>alert('Login failed')</script>
 {{/if}}
 
 <script>
   function redirectToRegister() {
-    window.location.href = "/register"
+    window.location.href = "/register";
   }
 
   document.getElementById('loginForm').addEventListener('submit', async function(event) {
@@ -46,16 +45,21 @@
     const password = document.getElementById('password').value;
 
     try {
-      const response = await fetch.post('/api/users/login', { email, password });
-      console.log(response)
-    /*  if (response.data.status === 'success') {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      console.log(data);
+      /* if (data.status === 'success') {
         window.location.href = '/views/carts';
       } else {
         alert('Login failed');
-      }*/
+      } */
     } catch (error) {
       alert('Login failed');
-      console.log(error)
+      console.error(error);
     }
   });
 </script>
