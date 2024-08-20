@@ -41,6 +41,7 @@ router.get('/users', jwtAuth, isAdmin, async (req, res, next) => {
 })
 
 router.post('/register', async (req, res, next) => {
+
   try {
     const { firstName, lastName, email, age, password } = req.body;
 

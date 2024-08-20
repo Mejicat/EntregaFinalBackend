@@ -18,7 +18,7 @@
 <script>
   document.getElementById('logoutButton').addEventListener('click', async function() {
     try {
-      const response = await axios.post('/api/sessions/logout');
+      const response = await axios.post('/api/users/logout');
       if (response.data.status === 'success') {
         window.location.href = '/login';
       } else {
