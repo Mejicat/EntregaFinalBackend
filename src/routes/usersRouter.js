@@ -43,9 +43,9 @@ router.get('/users', jwtAuth, isAdmin, async (req, res, next) => {
 router.post('/register', async (req, res, next) => {
 
   try {
-    const { firstName, lastName, email, age, password } = req.body;
+    const { first_name, last_name, email, age, password } = req.body;
 
-    if (!firstName || !lastName || !email || !age || !password) {
+    if (!first_name || !last_name || !email || !age || !password) {
       return res.status(400).send({ status: "error", message: "Todos los campos son requeridos" });
     }
 
@@ -55,8 +55,8 @@ router.post('/register', async (req, res, next) => {
     }
 
     const newUser = {
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       email,
       age,
       password: createHash(password),
