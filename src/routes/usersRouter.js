@@ -78,7 +78,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     const user = await userService.findUserEmail(email);
-    if (!user || !isValidPassword(user, password)) {
+    if (!user || !isValidPassword(password, user.password)) {
       return res.status(400).send({ status: "error", message: "Credenciales inválidas" });
     }
 

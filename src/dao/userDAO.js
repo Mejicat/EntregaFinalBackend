@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken"
-
-import { isValidPassword } from "../utils/bcrypt.js"
-import userModel from "./models/userModel.js"
+import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
+import { isValidPassword } from "../utils/bcrypt.js";
+import userModel from "./models/userModel.js";
 
 class UserDAO {
   static instance = null;
@@ -39,53 +39,53 @@ class UserDAO {
   }
 
   async registerUser(user) {
-    const { first_name, last_name, email, age, password } = user
+    const { first_name, last_name, email, age, password } = user;
 
     if (!first_name || !last_name || !email || !age || !password) {
-      throw new Error("Error al registrar el usuario, faltan datos mandatorios")
+      throw new Error("Error al registrar el usuario, faltan datos mandatorios");
     }
 
     try {
+      const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
       let newUser = await userModel.create({
         first_name: first_name || '',
         last_name: last_name || '',
         email,
         age: age || 0,
-        password: password || ''
-      })
+        password: hashedPassword,
+      });
 
-      if (user.email === "adminCoder@coder.com" && isValidPassword(user, 'adminCod3r123')) {
-        newUser.role = "admin"
-        await newUser.save()
+      // Verificar si el usuario es admin
+      if (user.email === "adminCoder@coder.com" && isValidPassword('adminCod3r123', newUser.password)) {
+        newUser.role = "admin";
+        await newUser.save();
       }
-      return newUser
+      return newUser;
     } catch (error) {
-      console.error("Error al registrar usuario:", error)
-      throw error
+      console.error("Error al registrar usuario:", error);
+      throw error;
     }
   }
 
   async login(email, password) {
     if (!email || !password) {
-      throw new Error("Datos de acceso inválidos. Verificar e reintentar nuevamente.")
+      throw new Error("Datos de acceso inválidos. Verificar e intentar nuevamente.");
     }
 
     try {
-      const user = await userModel.findOne({ email }).lean()
+      const user = await userModel.findOne({ email }).lean();
 
-      if (!user) throw new Error("Credenciales inválidas")
+      if (!user) throw new Error("Credenciales inválidas");
 
-      if (isValidPassword(user, password)) {
-        delete user.password
-        return jwt.sign(user, "coderSecret", { expiresIn: "1h" })
+      if (isValidPassword(password, user.password)) {
+        delete user.password;
+        return jwt.sign(user, "coderSecret", { expiresIn: "1h" });
       }
 
-      throw new Error("Credenciales inválidas")
-    }
-
-    catch (error) {
-      console.error("Error al intentar hacer login:", error)
-      throw new Error("Error al intentar hacer login")
+      throw new Error("Credenciales inválidas");
+    } catch (error) {
+      console.error("Error al intentar hacer login:", error);
+      throw new Error("Error al intentar hacer login");
     }
   }
 

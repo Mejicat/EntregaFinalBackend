@@ -17,7 +17,7 @@
         <button type="submit" class="w-full rounded-lg bg-purple-600 px-6 py-3 text-center text-lg font-semibold text-white transition duration-150 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">Iniciar Sesión</button>
 
         <div id="loginError" class="text-center text-red-500 mt-4 hidden">
-          Error: Credenciales inválidas.
+          Error en las credenciales
         </div>
 
         <div class="text-center mt-4">
@@ -44,6 +44,9 @@
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    // Ocultar el mensaje de error antes de intentar el login
+    document.getElementById('loginError').classList.add('hidden');
+
     try {
       const response = await fetch('/api/users/login', {
         method: 'POST',
@@ -65,4 +68,5 @@
     }
   });
 </script>
+
 
