@@ -16,6 +16,10 @@
 
         <button type="submit" class="w-full rounded-lg bg-purple-600 px-6 py-3 text-center text-lg font-semibold text-white transition duration-150 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">Iniciar Sesión</button>
 
+        <div id="loginError" class="text-center text-red-500 mt-4 hidden">
+          Error: Credenciales inválidas.
+        </div>
+
         <div class="text-center mt-4">
           <a href="/api/users/github" class="text-sm font-medium text-purple-600 transition duration-150 hover:text-purple-700">Iniciar sesión con GitHub</a>
         </div>
@@ -29,10 +33,6 @@
     </div>
   </div>
 </div>
-
-{{#if failLogin}}
-<script>alert('Login failed')</script>
-{{/if}}
 
 <script>
   function redirectToRegister() {
@@ -50,16 +50,19 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await response.json();
-      console.log(data);
-      /* if (data.status === 'success') {
+
+      if (response.ok) {
+        // Redirigir a la página de carritos si el login fue exitoso
         window.location.href = '/views/carts';
       } else {
-        alert('Login failed');
-      } */
+        // Mostrar mensaje de error si el login falló
+        document.getElementById('loginError').classList.remove('hidden');
+      }
     } catch (error) {
-      alert('Login failed');
-      console.error(error);
+      console.error('Error durante el login:', error);
+      document.getElementById('loginError').textContent = 'Error al conectar con el servidor.';
+      document.getElementById('loginError').classList.remove('hidden');
     }
   });
 </script>
+
