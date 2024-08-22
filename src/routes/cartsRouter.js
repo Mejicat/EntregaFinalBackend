@@ -33,7 +33,6 @@ router.get('/', authRedirect, async (req, res) => {
     }
 });
 
-
 router.get('/:cid', authRedirect, async (req, res) => {
     try {
         const result = await CartService.getProductsFromCartByID(req.params.cid);
