@@ -1,6 +1,5 @@
 import mongoose from "mongoose"
 import mongoosePaginate from "mongoose-paginate-v2"
-import { createHash } from "../../utils/bcrypt.js"
 
 const userCollection = "users"
 
@@ -68,10 +67,6 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.plugin(mongoosePaginate)
-
-userSchema.pre("save", function () {
-    this.password = createHash(this.password)
-})
 
 const userModel = mongoose.model(userCollection, userSchema)
 

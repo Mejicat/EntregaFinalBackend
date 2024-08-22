@@ -1,6 +1,3 @@
-import { createHash } from 'crypto';
-import bcrypt from 'bcrypt';
-
 import UserDto from '../dao/dto/userDTO.js'
 
 class UserRepository {
@@ -55,8 +52,6 @@ class UserRepository {
 
   async registerUser(user) {
     try {
-      // Acá nos aseguramos que la contraseña sea hasheada antes de guardarla en la base de datos
-      user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
       const newUser = await this.dao.registerUser(user);
       return new UserDto(newUser);
     } catch (error) {

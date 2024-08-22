@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import bcrypt from 'bcrypt';
+
 import { isValidPassword } from "../utils/bcrypt.js";
 import userModel from "./models/userModel.js";
 
@@ -46,13 +46,12 @@ class UserDAO {
     }
 
     try {
-      const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
       let newUser = await userModel.create({
         first_name: first_name || '',
         last_name: last_name || '',
         email,
         age: age || 0,
-        password: hashedPassword,
+        password,
       });
 
       // Verificar si el usuario es admin
