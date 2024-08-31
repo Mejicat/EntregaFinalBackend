@@ -32,18 +32,23 @@ router.get('/register', logged, async (req, res) => {
 })
 
 //Ruta si el usuario está loggeado
-router.get('/user', passport.authenticate("jwt", { session: false }), authRedirect, async (req, res) => {
+router.get('/user', passport.authenticate("jwt", { session: false }), (req, res, next) => {
+  if (!req.user) {
+      console.error('No user found in req');
+  } else {
+      console.log('User found in req:', req.user);
+  }
+  next();
+}, authRedirect, async (req, res) => {
   const userId = req.user.id;
   const cart = await CartService.getCart(userId);
-  res.render(
-    "user",
-    {
+  res.render("user", {
       layout: "main",
       user: req.session.user,
-      cart: cart //me traigo su cart
-    }
-  )
-})
+      cart: cart
+  });
+});
+
 
 //Endpoint de prueba del logger
 if (process.env.NODE_ENV === 'development') {
